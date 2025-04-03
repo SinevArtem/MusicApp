@@ -20,6 +20,11 @@ type Track struct {
 	Name_artist string
 }
 
+type LoginAndPassword struct {
+	Login    string
+	Password string
+}
+
 var Users = []User{}
 var Tracks = []Track{}
 
@@ -85,4 +90,26 @@ func InsertResponseDatabase(response string, args ...any) {
 
 	db.Exec(response, args...)
 
+}
+
+func SelectLoginOrPasswordOnDatabase(login string) *LoginAndPassword {
+	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	defer db.Close()
+
+	row := db.QueryRow("SELECT login,password FROM users WHERE login=$1", login)
+
+	lp := &LoginAndPassword{}
+
+	err = row.Scan(&lp.Login, &lp.Password)
+	if err != nil {
+		fmt.Println("данные не были получены")
+		return nil
+	}
+
+	return lp
 }

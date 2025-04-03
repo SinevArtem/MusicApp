@@ -16,6 +16,10 @@ type viewprofile struct {
 	Name_artist string
 }
 
+type exeptionOnRegOrLog struct {
+	Exeption string
+}
+
 func GetChartUser() *viewprofile {
 	ViewProfile := viewprofile{}
 	for _, u := range db.Users {
@@ -36,4 +40,10 @@ func GetChartUser() *viewprofile {
 	}
 
 	return &ViewProfile
+}
+
+func GetExeptionOnRegister(s string) *exeptionOnRegOrLog {
+
+	exeptionOnRegOrLog := &exeptionOnRegOrLog{Exeption: s}
+	return exeptionOnRegOrLog
 }
