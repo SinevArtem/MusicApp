@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Регистрация</title>
+        <link rel="stylesheet" href="/static/css/login_styles.css">
+    </head>
+    <body>
+        <div id="wrapper">
+            <header>
+                <div id="emblem">LoveMusics</div>
+            </header>
+            <div class="login_form">
+                <div id="emblem_login">Вход</div>
+                <form action="/login" method="post">
+                    <div class="form-group">
+                        <label>Логин:</label>
+                        <input type="text" name="login">
+                    </div>
+                
+                    
+                    
+                    <div class="form-group">
+                        <label>Пароль:</label>
+                        <input type="password" name="password">
+                    </div>
+                
+                    
+                    <div class="login-register">
+                        <a href="/register">Зарегестрироваться</a>
+                        <button class="login-button">Войти</button>
+                    </div>
+                        
+                    
+                </form>
+            </div>
+    
+        </div>
+        
+
+    </body>
+
+</html>

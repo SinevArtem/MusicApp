@@ -1,0 +1,88 @@
+package database
+
+import (
+	"database/sql"
+	"fmt"
+
+	_ "github.com/lib/pq"
+)
+
+type User struct {
+	User_id      int
+	Name_user    string
+	Surname_user string
+	City_user    string
+}
+
+type Track struct {
+	Track_id    int
+	Name_music  string
+	Name_artist string
+}
+
+var Users = []User{}
+var Tracks = []Track{}
+
+func OpenDatabase() {
+	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	defer db.Close()
+
+	row, err := db.Query("SELECT * FROM users")
+	if err != nil {
+		panic(err)
+	}
+	defer row.Close()
+
+	for row.Next() {
+		u := User{}
+		err := row.Scan(&u.User_id, &u.Name_user, &u.Surname_user, &u.City_user)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		Users = append(Users, u)
+	}
+
+	row, err = db.Query("SELECT * FROM tracks")
+	if err != nil {
+		panic(err)
+	}
+	defer row.Close()
+
+	for row.Next() {
+		t := Track{}
+		err := row.Scan(&t.Track_id, &t.Name_music, &t.Name_artist)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		Tracks = append(Tracks, t)
+	}
+
+	for _, u := range Users {
+		fmt.Println(u.User_id, u.Name_user, u.Surname_user, u.City_user)
+	}
+
+	for _, t := range Tracks {
+		fmt.Println(t.Track_id, t.Name_music, t.Name_artist)
+	}
+
+}
+
+func InsertResponseDatabase(response string, args ...any) {
+	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	defer db.Close()
+
+	db.Exec(response, args...)
+
+}

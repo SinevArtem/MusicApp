@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>Профиль</title>
+        <link rel="stylesheet" href="/static/css/profile_styles.css">
+    </head>
+    <body>
+        
+        <div id="wrapper">
+            <header>
+                <div id="emblem">LoveMusic</div>
+                <form name="search" action="#" method="get">
+                    <input type="text" name="q" placeholder="Search"><button type="submit">Поиск</button>
+                </form>
+            </header>
+            <nav>
+                <ul class="top-menu">
+                    <li><a href="/profile">Профиль</a></li>
+                    <li><a href="/friends">Друзья</a></li>
+                    <li><a href="/toptracks">Топ треков</a></li>
+                    <li><a href="topartists">Топ артистов</a></li>
+                </ul>
+            </nav>
+            <div class="info-on-user">
+                <div class="profile-container">
+                    <div class="profile-picture">
+                        <img src="/static/images/mers.jpg" alt="Фото профиля">
+                    </div>
+                    <div class="profile-info">
+                        <h1>{{ .Name_user}} {{ .Surname_user}}</h1>
+                        <p>Город: {{ .City_user}}</p>
+                    </div>
+                </div>
+                <div class="top-tracks-user">
+                    <table class="tracks-table">
+                        <caption>Топ треков</caption>
+                        <tr>
+                            <th>Место</th>
+                            <th>Трек</th>
+                            <th>Исполнитель</th>
+                        </tr>
+                        <tr>
+                            <td>{{ .User_id}}</td>
+                            <td>{{ .Name_music}}</td>
+                            <td>{{ .Name_artist}}</td>
+                        </tr>
+                        <tr>
+                            <td>Петр Петров</td>
+                            <td>30</td>
+                            <td>Санкт-Петербург</td>
+                        </tr>
+                        <tr>
+                            <td>Анна Сидорова</td>
+                            <td>28</td>
+                            <td>Казань</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+           
+            <div id="heading">
+
+            </div>
+            <aside>
+
+            </aside>
+            <section>
+
+            </section>
+        </div>
+        <footer></footer>
+
+    </body>
+</html>
