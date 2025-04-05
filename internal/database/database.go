@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -28,16 +29,32 @@ type LoginAndPassword struct {
 var Users = []User{}
 var Tracks = []Track{}
 
-func OpenDatabase() {
+var DB *sql.DB
+
+func InitDatabase() error {
 	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+	var err error
+
+	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	defer db.Close()
 
-	row, err := db.Query("SELECT * FROM users")
+	DB.SetMaxOpenConns(25)    // max соединений
+	DB.SetConnMaxIdleTime(25) // max бездействующих соединений
+	DB.SetConnMaxLifetime(3 * time.Minute)
+
+	return DB.Ping()
+}
+
+func Close() error {
+	return DB.Close()
+}
+
+func ProfileDatabase() {
+
+	row, err := DB.Query("SELECT * FROM users")
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +70,7 @@ func OpenDatabase() {
 		Users = append(Users, u)
 	}
 
-	row, err = db.Query("SELECT * FROM tracks")
+	row, err = DB.Query("SELECT * FROM tracks")
 	if err != nil {
 		panic(err)
 	}
@@ -80,32 +97,18 @@ func OpenDatabase() {
 }
 
 func InsertResponseDatabase(response string, args ...any) {
-	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-	defer db.Close()
 
-	db.Exec(response, args...)
+	DB.Exec(response, args...)
 
 }
 
 func SelectLoginOrPasswordOnDatabase(login string) *LoginAndPassword {
-	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-	defer db.Close()
 
-	row := db.QueryRow("SELECT login,password FROM users WHERE login=$1", login)
+	row := DB.QueryRow("SELECT login,password FROM users WHERE login=$1", login)
 
 	lp := &LoginAndPassword{}
 
-	err = row.Scan(&lp.Login, &lp.Password)
+	err := row.Scan(&lp.Login, &lp.Password)
 	if err != nil {
 		fmt.Println("данные не были получены")
 		return nil
