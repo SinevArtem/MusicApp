@@ -4,12 +4,19 @@ import (
 	db "LoveMusic/internal/database"
 	h "LoveMusic/internal/handlers"
 	"database/sql"
+	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 var DB *sql.DB
 
 func main() {
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("Env not found")
+	}
 
 	if err := db.InitDatabase(); err != nil {
 		panic(err)

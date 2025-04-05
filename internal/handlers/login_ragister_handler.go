@@ -35,6 +35,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if db.CheckLoginDatabase("SELECT login FROM users WHERE login=$1", login) == login {
+			tmpl.Execute(w, ct.GetExeptionOnRegister("Такой пользователь уже есть"))
+			return
+		}
+
 		if len(username) < 4 && len(login) < 4 {
 			tmpl.Execute(w, ct.GetExeptionOnRegister("Username и Логин должны состоять минимум из 4 символов"))
 			return

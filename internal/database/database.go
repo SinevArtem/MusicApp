@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -32,7 +33,10 @@ var Tracks = []Track{}
 var DB *sql.DB
 
 func InitDatabase() error {
-	connStr := "user=postgres password=1279660 dbname=MusicAppDB sslmode=disable"
+
+	s, _ := os.LookupEnv("INIT_DB")
+
+	connStr := s
 	var err error
 
 	DB, err = sql.Open("postgres", connStr)
@@ -100,6 +104,17 @@ func InsertResponseDatabase(response string, args ...any) {
 
 	DB.Exec(response, args...)
 
+}
+
+func CheckLoginDatabase(response string, args ...any) string {
+	row := DB.QueryRow(response, args...)
+	l := struct{ login string }{}
+	err := row.Scan(&l.login)
+	if err != nil {
+		fmt.Println("данные не были получены")
+		return ""
+	}
+	return l.login
 }
 
 func SelectLoginOrPasswordOnDatabase(login string) *LoginAndPassword {
