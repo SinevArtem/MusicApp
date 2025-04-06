@@ -12,6 +12,11 @@ func LoadProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	v := ct.GetChartUser()
 	tmpl, _ := template.ParseFiles("static/templates/profile.html")
 	tmpl.Execute(w, v)

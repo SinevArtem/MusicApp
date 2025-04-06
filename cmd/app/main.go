@@ -29,6 +29,7 @@ func main() {
 	http.HandleFunc("/", h.LoadProfile)
 	http.HandleFunc("/register", h.RegisterHandler)
 	http.HandleFunc("/login", h.LoginHandler)
+	http.HandleFunc("/protected", h.Protected)
 
 	//http.HandleFunc("/profile", LoadProfile)
 

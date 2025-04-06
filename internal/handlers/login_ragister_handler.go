@@ -3,9 +3,11 @@ package handlers
 import (
 	ct "LoveMusic/internal/create_templates"
 	db "LoveMusic/internal/database"
+	"context"
 	"html/template"
 	"net/http"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -98,9 +100,75 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		sessionToken := generateToken(32)
+		csrfToken := generateToken(32)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		for {
+			exists, err := db.RedisDB.Exists(ctx, "session:"+sessionToken).Result() // Result возвращает результат и ошибку, если 1 - такой ключ есть ,0 - нет
+			if err != nil || exists == 0 {
+				break
+			}
+			sessionToken = generateToken(32)
+		}
+
+		for {
+			exists, err := db.RedisDB.Exists(ctx, "csrf:"+csrfToken).Result()
+			if err != nil || exists == 0 {
+				break
+			}
+			csrfToken = generateToken(32)
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_token",
+			Value:    sessionToken,
+			Expires:  time.Now().Add(3 * time.Minute),
+			HttpOnly: true,  // javascript не получит токен
+			Secure:   false, // при HTTPS true
+			SameSite: http.SameSiteLaxMode,
+			Path:     "/",
+		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "csrf_token",
+			Value:    csrfToken,
+			Expires:  time.Now().Add(3 * time.Minute),
+			HttpOnly: false,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
+			Path:     "/",
+		})
+
+		if err := db.RedisDB.Set(ctx, "session:"+sessionToken, login, 3*time.Minute).Err(); err != nil {
+			http.Error(w, "Ошибка сервера", http.StatusInternalServerError)
+			return
+		} // Err() возвращает только ошибку без результата
+
+		if err := db.RedisDB.Set(ctx, "csrf:"+csrfToken, login, 3*time.Minute).Err(); err != nil {
+			http.Error(w, "Ошибка сервера", http.StatusInternalServerError)
+			return
+		}
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	tmpl.Execute(w, nil)
 
+}
+
+func Protected(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		er := http.StatusMethodNotAllowed
+		http.Error(w, "Invalid request mathod", er)
+		return
+	}
+
+	if err := Authorise(r); err != nil {
+		er := http.StatusUnauthorized
+		http.Error(w, "Unauthorizad", er)
+		return
+	}
 }
