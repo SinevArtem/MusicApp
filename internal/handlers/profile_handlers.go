@@ -17,6 +17,11 @@ func LoadProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := Authorise(r); err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
 	v := ct.GetChartUser()
 	tmpl, _ := template.ParseFiles("static/templates/profile.html")
 	tmpl.Execute(w, v)
