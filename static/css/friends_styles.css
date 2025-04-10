@@ -1,0 +1,57 @@
+#wrapper {
+    max-width: auto;
+    height: 2024px;
+    margin: auto;
+    background-color: rgb(42, 37, 37);
+}
+
+header{
+    padding: 20px 10px;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+
+
+}
+
+form[name="search"]{
+    float: right;
+    
+}
+
+#emblem {
+    color: #ffffff;
+    font-size: 24px;
+    text-align: left;
+}
+
+nav a{
+    text-decoration: none;
+}
+
+nav ul{
+    margin: 0;
+    padding: 0;
+}
+
+nav li{
+    list-style-position: inside;
+    font: 14px 'Oswald', sans-serif;
+	padding: 10px;
+}
+
+.top-menu li {
+	display: inline-block;
+	padding: 10px 30px;
+	margin: 0;
+    background-color:  rgb(59, 53, 53);
+}
+
+.top-menu li:active{
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.top-menu a {
+	color: #b2b2b2;
+}

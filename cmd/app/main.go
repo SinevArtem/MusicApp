@@ -26,10 +26,11 @@ func main() {
 	fileserver := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileserver))
 
-	http.HandleFunc("/", h.LoadProfile)
+	http.HandleFunc("/profile", h.LoadProfile)
 	http.HandleFunc("/register", h.RegisterHandler)
 	http.HandleFunc("/login", h.LoginHandler)
-	http.HandleFunc("/protected", h.Protected)
+	http.HandleFunc("/friends", h.UserFriends)
+	http.HandleFunc("/logout", h.LogoutHandler)
 
 	//http.HandleFunc("/profile", LoadProfile)
 

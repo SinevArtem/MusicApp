@@ -4,12 +4,14 @@ import (
 	db "LoveMusic/internal/database"
 	"context"
 	"errors"
+	"log"
 	"net/http"
+	"time"
 )
 
 var ErrAuth = errors.New("Unauthorized")
 
-func Authorise(r *http.Request) error {
+func Authorise(w http.ResponseWriter, r *http.Request) error {
 
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil || sessionToken.Value == "" {
@@ -32,37 +34,30 @@ func Authorise(r *http.Request) error {
 		return ErrAuth
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    SessionToken,
+		Expires:  time.Now().Add(30 * time.Minute),
+		HttpOnly: true,  // javascript не получит токен
+		Secure:   false, // при HTTPS true
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    CsrfToken,
+		Expires:  time.Now().Add(30 * time.Minute),
+		HttpOnly: false,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
+	})
+
+	if err := db.RedisDB.Expire(ctx, "session:"+sessionToken.Value, 30*time.Minute).Err(); err != nil {
+		log.Println("Не удалось продлить сессию:", err)
+	}
+
 	return nil
 
 }
-
-// func CheckCSRV(r *http.Request, login string) bool {
-// 	cookieToken, err := r.Cookie("csrf_token")
-// 	if err != nil || cookieToken.Value == "" {
-// 		return false
-// 	}
-
-// 	ctx := context.Background()
-// 	storedLogin, err := db.RedisDB.Get(ctx, "csrf:"+cookieToken.Value).Result()
-// 	if err != nil {
-// 		return false
-// 	}
-// 	fmt.Printf("%s %s", login, storedLogin)
-// 	return storedLogin == login
-// }
-
-// func CheckSession(r *http.Request, login string) bool {
-// 	cookieToken, err := r.Cookie("session_token")
-// 	if err != nil || cookieToken.Value == "" {
-// 		return false
-// 	}
-
-// 	ctx := context.Background()
-// 	storedLogin, err := db.RedisDB.Get(ctx, "session:"+cookieToken.Value).Result()
-// 	if err != nil {
-// 		return false
-// 	}
-
-// 	fmt.Printf("%s %s", login, storedLogin)
-// 	return storedLogin == login
-// }
