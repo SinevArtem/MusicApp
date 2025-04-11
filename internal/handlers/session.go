@@ -19,6 +19,7 @@ func Authorise(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	ctx := context.Background()
+
 	login, err := db.RedisDB.Get(ctx, "session:"+sessionToken.Value).Result()
 	if err != nil {
 		return ErrAuth
@@ -36,7 +37,7 @@ func Authorise(w http.ResponseWriter, r *http.Request) error {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    SessionToken,
+		Value:    sessionToken.Value,
 		Expires:  time.Now().Add(30 * time.Minute),
 		HttpOnly: true,  // javascript не получит токен
 		Secure:   false, // при HTTPS true
@@ -46,7 +47,7 @@ func Authorise(w http.ResponseWriter, r *http.Request) error {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
-		Value:    CsrfToken,
+		Value:    csrfToken.Value,
 		Expires:  time.Now().Add(30 * time.Minute),
 		HttpOnly: false,
 		Secure:   false,
@@ -54,7 +55,11 @@ func Authorise(w http.ResponseWriter, r *http.Request) error {
 		Path:     "/",
 	})
 
-	if err := db.RedisDB.Expire(ctx, "session:"+sessionToken.Value, 30*time.Minute).Err(); err != nil {
+	if err := db.RedisDB.Set(ctx, "session:"+sessionToken.Value, login, 30*time.Minute).Err(); err != nil {
+		log.Println("Не удалось продлить сессию:", err)
+	}
+
+	if err := db.RedisDB.Set(ctx, "csrf:"+csrfToken.Value, login, 30*time.Minute).Err(); err != nil {
 		log.Println("Не удалось продлить сессию:", err)
 	}
 

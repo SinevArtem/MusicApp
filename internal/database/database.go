@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -90,14 +91,6 @@ func ProfileDatabase() {
 		Tracks = append(Tracks, t)
 	}
 
-	for _, u := range Users {
-		fmt.Println(u.User_id, u.Name_user, u.Surname_user, u.City_user)
-	}
-
-	for _, t := range Tracks {
-		fmt.Println(t.Track_id, t.Name_music, t.Name_artist)
-	}
-
 }
 
 func InsertResponseDatabase(response string, args ...any) {
@@ -130,4 +123,51 @@ func SelectLoginOrPasswordOnDatabase(login string) *LoginAndPassword {
 	}
 
 	return lp
+}
+
+func SelectUser(user_id int) string {
+	row := DB.QueryRow("SELECT username FROM users WHERE user_id = $1", user_id)
+
+	myuser := struct {
+		Username string
+	}{}
+
+	err := row.Scan(&myuser.Username)
+	if err != nil {
+		fmt.Println("Данные не были получены")
+		return ""
+	}
+
+	return myuser.Username
+
+}
+
+type TopTracksUser struct {
+	Place      string
+	NameMusic  string
+	NameArtist string
+}
+
+func GetTopTracksUser(user_id int) []TopTracksUser {
+
+	table := []TopTracksUser{}
+
+	rows, err := DB.Query("SELECT place, name_music, name_artist FROM top_tracks_user JOIN tracks USING(track_id) WHERE user_id=$1 ORDER BY place", user_id)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		temp := TopTracksUser{}
+
+		err := rows.Scan(&temp.Place, &temp.NameMusic, &temp.NameArtist)
+		if err != nil {
+			log.Printf("Error scanning row: %v", err)
+			continue
+		}
+		table = append(table, temp)
+	}
+	fmt.Println(table)
+	return table
 }

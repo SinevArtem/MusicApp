@@ -69,9 +69,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-var SessionToken string
-var CsrfToken string
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, _ := template.ParseFiles("static/templates/login.html")
@@ -103,31 +100,31 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		SessionToken = generateToken(32)
-		CsrfToken = generateToken(32)
+		sessionToken := generateToken(32)
+		csrfToken := generateToken(32)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		for {
-			exists, err := db.RedisDB.Exists(ctx, "session:"+SessionToken).Result() // Result возвращает результат и ошибку, если 1 - такой ключ есть ,0 - нет
+			exists, err := db.RedisDB.Exists(ctx, "session:"+sessionToken).Result() // Result возвращает результат и ошибку, если 1 - такой ключ есть ,0 - нет
 			if err != nil || exists == 0 {
 				break
 			}
-			SessionToken = generateToken(32)
+			sessionToken = generateToken(32)
 		}
 
 		for {
-			exists, err := db.RedisDB.Exists(ctx, "csrf:"+CsrfToken).Result()
+			exists, err := db.RedisDB.Exists(ctx, "csrf:"+csrfToken).Result()
 			if err != nil || exists == 0 {
 				break
 			}
-			CsrfToken = generateToken(32)
+			csrfToken = generateToken(32)
 		}
 
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_token",
-			Value:    SessionToken,
+			Value:    sessionToken,
 			Expires:  time.Now().Add(30 * time.Minute),
 			HttpOnly: true,  // javascript не получит токен
 			Secure:   false, // при HTTPS true
@@ -137,7 +134,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.SetCookie(w, &http.Cookie{
 			Name:     "csrf_token",
-			Value:    CsrfToken,
+			Value:    csrfToken,
 			Expires:  time.Now().Add(30 * time.Minute),
 			HttpOnly: false,
 			Secure:   false,
@@ -145,12 +142,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 		})
 
-		if err := db.RedisDB.Set(ctx, "session:"+SessionToken, login, 30*time.Minute).Err(); err != nil {
+		if err := db.RedisDB.Set(ctx, "session:"+sessionToken, login, 30*time.Minute).Err(); err != nil {
 			http.Error(w, "Ошибка сервера", http.StatusInternalServerError)
 			return
 		} // Err() возвращает только ошибку без результата
 
-		if err := db.RedisDB.Set(ctx, "csrf:"+CsrfToken, login, 30*time.Minute).Err(); err != nil {
+		if err := db.RedisDB.Set(ctx, "csrf:"+csrfToken, login, 30*time.Minute).Err(); err != nil {
 			http.Error(w, "Ошибка сервера", http.StatusInternalServerError)
 			return
 		}

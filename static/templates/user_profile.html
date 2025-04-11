@@ -10,9 +10,7 @@
         <div id="wrapper">
             <header>
                 <div id="emblem">LoveMusic</div>
-                <form name="search" action="#" method="get">
-                    <input type="text" name="q" placeholder="Search"><button type="submit">Поиск</button>
-                </form>
+                
             </header>
             <nav>
                 <ul class="top-menu">
@@ -28,8 +26,8 @@
                         <img src="/static/images/mers.jpg" alt="Фото профиля">
                     </div>
                     <div class="profile-info">
-                        <h1>{{ .Name_user}} {{ .Surname_user}}</h1>
-                        <p>Город: {{ .City_user}}</p>
+                        <h1>{{ .Profile.Username}}</h1>
+                        <p>Ваш ID: {{ .Profile.User_ID}}</p>
                     </div>
                 </div>
                 <div class="top-tracks-user">
@@ -40,21 +38,14 @@
                             <th>Трек</th>
                             <th>Исполнитель</th>
                         </tr>
+                        {{range .TopTracks}}
                         <tr>
-                            <td>{{ .User_id}}</td>
-                            <td>{{ .Name_music}}</td>
-                            <td>{{ .Name_artist}}</td>
+                            <td>{{.Place}}</td>
+                            <td>{{.NameMusic}}</td>
+                            <td>{{.NameArtist}}</td>
                         </tr>
-                        <tr>
-                            <td>Петр Петров</td>
-                            <td>30</td>
-                            <td>Санкт-Петербург</td>
-                        </tr>
-                        <tr>
-                            <td>Анна Сидорова</td>
-                            <td>28</td>
-                            <td>Казань</td>
-                        </tr>
+                        {{end}}
+                        
                     </table>
                 </div>
             </div>
