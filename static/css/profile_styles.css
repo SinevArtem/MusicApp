@@ -210,3 +210,17 @@ nav li{
 .add-track-button:hover{
     background-color: rgb(251, 0, 0);
 }
+
+#exeption { 
+    font-size: 30px;
+    color: #ff0000;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#notification{
+    font-size: 30px;
+    color: #1eff00;
+    text-align: center;
+    margin-bottom: 10px;
+}

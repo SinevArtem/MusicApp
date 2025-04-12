@@ -36,8 +36,6 @@ func main() {
 
 	//http.HandleFunc("/profile", LoadProfile)
 
-	db.ProfileDatabase()
-
 	if err := http.ListenAndServe(":8082", nil); err != nil {
 		panic(err)
 	}

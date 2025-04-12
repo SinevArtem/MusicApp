@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	ct "LoveMusic/internal/create_templates"
 	db "LoveMusic/internal/database"
 	"fmt"
 	"html/template"
@@ -79,9 +78,8 @@ func UserFriends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := ct.GetChartUser()
 	tmpl, _ := template.ParseFiles("static/templates/friends.html")
-	tmpl.Execute(w, v)
+	tmpl.Execute(w, nil)
 }
 
 func UserProfileHandler(w http.ResponseWriter, r *http.Request) {

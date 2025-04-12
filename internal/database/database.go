@@ -11,26 +11,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type User struct {
-	User_id      int
-	Name_user    string
-	Surname_user string
-	City_user    string
-}
-
-type Track struct {
-	Track_id    int
-	Name_music  string
-	Name_artist string
-}
-
 type LoginAndPassword struct {
 	Login    string
 	Password string
 }
-
-var Users = []User{}
-var Tracks = []Track{}
 
 var DB *sql.DB
 
@@ -56,42 +40,6 @@ func InitDatabase() error {
 
 func Close() error {
 	return DB.Close()
-}
-
-func ProfileDatabase() {
-
-	row, err := DB.Query("SELECT * FROM users")
-	if err != nil {
-		panic(err)
-	}
-	defer row.Close()
-
-	for row.Next() {
-		u := User{}
-		err := row.Scan(&u.User_id, &u.Name_user, &u.Surname_user, &u.City_user)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		Users = append(Users, u)
-	}
-
-	row, err = DB.Query("SELECT * FROM tracks")
-	if err != nil {
-		panic(err)
-	}
-	defer row.Close()
-
-	for row.Next() {
-		t := Track{}
-		err := row.Scan(&t.Track_id, &t.Name_music, &t.Name_artist)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		Tracks = append(Tracks, t)
-	}
-
 }
 
 func InsertResponseDatabase(response string, args ...any) {
@@ -186,4 +134,27 @@ func GetUserID(login string) int {
 
 	t, _ := strconv.Atoi(user_id.user_id)
 	return t
+}
+
+func AddTrack(name_music, name_artist string) {
+	_, err := DB.Exec("INSERT INTO tracks (name_music, name_artist) VALUES ($1,$2)", name_music, name_artist)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+}
+
+func CheckTrackAndArtist(response string, args ...any) (string, string) {
+	row := DB.QueryRow(response, args...)
+	l := struct {
+		track  string
+		artist string
+	}{}
+	err := row.Scan(&l.track, &l.artist)
+	if err != nil {
+		fmt.Println("данные не были получены")
+
+	}
+	return l.track, l.artist
 }
