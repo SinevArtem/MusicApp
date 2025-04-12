@@ -11,28 +11,28 @@ import (
 
 var ErrAuth = errors.New("Unauthorized")
 
-func Authorise(w http.ResponseWriter, r *http.Request) error {
+func Authorise(w http.ResponseWriter, r *http.Request) (string, error) {
 
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil || sessionToken.Value == "" {
-		return ErrAuth
+		return "", ErrAuth
 	}
 
 	ctx := context.Background()
 
 	login, err := db.RedisDB.Get(ctx, "session:"+sessionToken.Value).Result()
 	if err != nil {
-		return ErrAuth
+		return "", ErrAuth
 	}
 
 	csrfToken, err := r.Cookie("csrf_token")
 	if err != nil || csrfToken.Value == "" {
-		return ErrAuth
+		return "", ErrAuth
 	}
 
 	storedLogin, err := db.RedisDB.Get(ctx, "csrf:"+csrfToken.Value).Result()
 	if err != nil || storedLogin != login {
-		return ErrAuth
+		return "", ErrAuth
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -63,6 +63,6 @@ func Authorise(w http.ResponseWriter, r *http.Request) error {
 		log.Println("Не удалось продлить сессию:", err)
 	}
 
-	return nil
+	return login, nil
 
 }

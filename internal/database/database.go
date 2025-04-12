@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -168,6 +169,21 @@ func GetTopTracksUser(user_id int) []TopTracksUser {
 		}
 		table = append(table, temp)
 	}
-	fmt.Println(table)
+
 	return table
+}
+
+func GetUserID(login string) int {
+
+	row := DB.QueryRow("SELECT user_id FROM users WHERE login=$1", login)
+
+	user_id := struct{ user_id string }{}
+
+	err := row.Scan(&user_id.user_id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	t, _ := strconv.Atoi(user_id.user_id)
+	return t
 }

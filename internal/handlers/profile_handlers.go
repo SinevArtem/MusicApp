@@ -18,14 +18,51 @@ func LoadProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Authorise(w, r); err != nil {
+	login, err := Authorise(w, r)
+	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	v := ct.GetChartUser()
-	tmpl, _ := template.ParseFiles("static/templates/profile.html")
-	tmpl.Execute(w, v)
+	user_id := db.GetUserID(login)
+
+	username := db.SelectUser(user_id)
+	if username == "" {
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+
+	viewprofile := struct {
+		Username string
+		User_ID  int
+	}{
+		Username: username,
+		User_ID:  user_id,
+	}
+
+	topTracks := db.GetTopTracksUser(user_id)
+
+	data := struct {
+		Profile struct {
+			Username string
+			User_ID  int
+		}
+		TopTracks []db.TopTracksUser
+	}{
+		Profile:   viewprofile,
+		TopTracks: topTracks,
+	}
+
+	tmpl, err := template.ParseFiles("static/templates/user_profile.html")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if err := tmpl.Execute(w, data); err != nil {
+		log.Println(err)
+		return
+	}
 
 	//http.ServeFile(w, r, "static/templates/profile.html")
 
@@ -37,7 +74,7 @@ func UserFriends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Authorise(w, r); err != nil {
+	if _, err := Authorise(w, r); err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -48,7 +85,7 @@ func UserFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
-	if err := Authorise(w, r); err != nil {
+	if _, err := Authorise(w, r); err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -99,6 +136,5 @@ func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	fmt.Println(username)
 
 }

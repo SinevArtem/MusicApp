@@ -160,7 +160,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	if err := Authorise(w, r); err != nil {
+	if _, err := Authorise(w, r); err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
