@@ -32,6 +32,7 @@ func main() {
 	http.HandleFunc("/friends", h.UserFriends)
 	http.HandleFunc("/logout", h.LogoutHandler)
 	http.HandleFunc("/user/", h.UserProfileHandler)
+	http.HandleFunc("/add_track", h.AddTrack)
 
 	//http.HandleFunc("/profile", LoadProfile)
 

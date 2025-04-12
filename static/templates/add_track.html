@@ -21,34 +21,31 @@
                     <li><a href="/add_track">Добавить трек</a></li>
                 </ul>
             </nav>
-            <div class="info-on-user">
-                <div class="profile-container">
-                    <div class="profile-picture">
-                        <img src="/static/images/mers.jpg" alt="Фото профиля">
+            
+            <div class="form-add-track">
+                <div id="add-track-emblem">Добавить трек</div>
+
+                <form action="/add_track" method="post">
+                    
+                    <div class="form-group">
+                        <label>Название трека:</label>
+                        <input type="text" name="name_music">
                     </div>
-                    <div class="profile-info">
-                        <h1>{{ .Profile.Username}}</h1>
-                        <p>Ваш ID: {{ .Profile.User_ID}}</p>
+                
+                    
+                    
+                    <div class="form-group">
+                        <label>Исполнитель:</label>
+                        <input type="text" name="name_artist">
                     </div>
-                </div>
-                <div class="top-tracks-user">
-                    <table>
-                        <caption>Топ треков</caption>
-                        <tr>
-                            <th>Место</th>
-                            <th>Трек</th>
-                            <th>Исполнитель</th>
-                        </tr>
-                        {{range .TopTracks}}
-                        <tr>
-                            <td>{{.Place}}</td>
-                            <td>{{.NameMusic}}</td>
-                            <td>{{.NameArtist}}</td>
-                        </tr>
-                        {{end}}
+                
+                    
+                    <div class="form-group">
+                        <button class="add-track-button">Добавить</button>
+                    </div>
                         
-                    </table>
-                </div>
+                    
+                </form>
             </div>
            
             <div id="heading">
