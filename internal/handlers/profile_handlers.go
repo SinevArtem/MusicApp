@@ -67,21 +67,6 @@ func LoadProfile(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UserFriends(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if _, err := Authorise(w, r); err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	tmpl, _ := template.ParseFiles("static/templates/friends.html")
-	tmpl.Execute(w, nil)
-}
-
 func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := Authorise(w, r); err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)

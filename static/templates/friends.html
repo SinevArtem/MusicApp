@@ -10,19 +10,36 @@
         <div id="wrapper">
             <header>
                 <div id="emblem">LoveMusic</div>
-                <form name="search" action="#" method="get">
-                    <input type="text" name="q" placeholder="Search"><button type="submit">Поиск</button>
-                </form>
             </header>
             <nav>
                 <ul class="top-menu">
                     <li><a href="/profile">Профиль</a></li>
                     <li><a href="/friends">Друзья</a></li>
                     <li><a href="/toptracks">Топ треков</a></li>
-                    <li><a href="topartists">Топ артистов</a></li>
+                    <li><a href="/topartists">Топ артистов</a></li>
                     <li><a href="/add_track">Добавить трек</a></li>
                 </ul>
             </nav>
+
+            <div class="form-search-friend">
+                <div id="search-friend-emblem">Найти друга</div>
+                <div id="exeption">{{ .Exeption}}</div>
+                
+                <form action="/friends" method="post">
+                    
+                    <div class="form-group">
+                        <label>Введите ID</label>
+                        <input type="text" name="user_id">
+                    </div>
+                
+                    
+                    <div class="form-group">
+                        <button class="search-friend-button">Найти</button>
+                    </div>
+                        
+                    
+                </form>
+            </div>
             
             <div class="user_friends">
 

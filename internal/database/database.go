@@ -158,3 +158,16 @@ func CheckTrackAndArtist(response string, args ...any) (string, string) {
 	}
 	return l.track, l.artist
 }
+
+func CheckUserID(response string, args ...any) string {
+	row := DB.QueryRow(response, args...)
+	l := struct {
+		user_id string
+	}{}
+	err := row.Scan(&l.user_id)
+	if err != nil {
+		fmt.Println("данные не были получены")
+
+	}
+	return l.user_id
+}
