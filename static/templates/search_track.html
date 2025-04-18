@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>Профиль</title>
+        <link rel="stylesheet" href="/static/css/search_styles.css">
+    </head>
+    <body>
+        
+        <div id="wrapper">
+            <header>
+                <div id="emblem">LoveMusic</div>
+                
+            </header>
+            <nav>
+                <ul class="top-menu">
+                    <li><a href="/profile">Профиль</a></li>
+                    <li><a href="/friends">Друзья</a></li>
+                    <li><a href="/search_track">Найти трек</a></li>
+                    <li><a href="/collection">Моя коллекция</a></li>
+                    <li><a href="/add_track">Добавить трек</a></li>
+                </ul>
+            </nav>
+            
+            <div class="search-container">
+                <div class="form-add-track">
+                    <div id="add-track-emblem">Найти трек</div>
+                    <div id="exeption">{{ .Exeption}}</div>
+                    <div id="notification">{{ .Notification}}</div>
+                    
+                    <form action="/search_track" method="post">
+                        <div class="form-group">
+                            <label>Название трека:</label>
+                            <input type="text" name="name_music">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Исполнитель:</label>
+                            <input type="text" name="name_artist">
+                        </div>
+                        
+                        <div class="form-group">
+                            <button class="add-track-button">Найти</button>
+                        </div>
+                    </form>
+                </div>
+
+                
+                <div class="search-results">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Трек</th>
+                                <th>Исполнитель</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .TopTracks}}
+                            <tr>
+                                <td>{{.NameMusic}}</td>
+                                <td>{{.NameArtist}}</td>
+                                <td>
+                                    <form action="/add_to_collection" method="post">
+                                        <input type="hidden" name="track_id" value="{{.ID}}">
+                                        <button type="submit" class="add-button">Добавить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+           
+            <div id="heading">
+
+            </div>
+            <aside>
+
+            </aside>
+            <section>
+
+            </section>
+        </div>
+        <footer></footer>
+
+    </body>
+</html>

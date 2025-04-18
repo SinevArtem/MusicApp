@@ -2,14 +2,16 @@
 <html lang="ru">
     <head>
         <meta charset="utf-8">
-        <title>Друзья</title>
-        <link rel="stylesheet" href="/static/css/friends_styles.css">
+        <title>Профиль</title>
+        <link rel="stylesheet" href="/static/css/profile_styles.css">
     </head>
     <body>
         
         <div id="wrapper">
             <header>
                 <div id="emblem">LoveMusic</div>
+                
+                </form>
             </header>
             <nav>
                 <ul class="top-menu">
@@ -20,29 +22,23 @@
                     <li><a href="/add_track">Добавить трек</a></li>
                 </ul>
             </nav>
-
-            <div class="form-search-friend">
-                <div id="search-friend-emblem">Найти друга</div>
-                <div id="exeption">{{ .Exeption}}</div>
-                
-                <form action="/friends" method="post">
+            <div class="top-tracks-user">
+                <table>
+                    <caption>Топ треков</caption>
+                    <tr>
+                        <th>Место</th>
+                        <th>Трек</th>
+                        <th>Исполнитель</th>
+                    </tr>
+                    {{range .TopTracks}}
+                    <tr>
+                        <td>{{.Place}}</td>
+                        <td>{{.NameMusic}}</td>
+                        <td>{{.NameArtist}}</td>
+                    </tr>
+                    {{end}}
                     
-                    <div class="form-group">
-                        <label>Введите ID</label>
-                        <input type="text" name="user_id">
-                    </div>
-                
-                    
-                    <div class="form-group">
-                        <button class="search-friend-button">Найти</button>
-                    </div>
-                        
-                    
-                </form>
-            </div>
-            
-            <div class="user_friends">
-
+                </table>
             </div>
            
             <div id="heading">

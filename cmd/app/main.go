@@ -33,6 +33,8 @@ func main() {
 	http.HandleFunc("/logout", h.LogoutHandler)
 	http.HandleFunc("/user/", h.UserProfileHandler)
 	http.HandleFunc("/add_track", h.AddTrack)
+	http.HandleFunc("/search_track", h.SearchTrack)
+	http.HandleFunc("/collection", h.CollectionHandler)
 
 	//http.HandleFunc("/profile", LoadProfile)
 

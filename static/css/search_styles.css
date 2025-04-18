@@ -1,0 +1,224 @@
+/* Основные стили */
+#wrapper {
+    max-width: auto;
+    margin: 0 auto;
+    background-color: rgb(42, 37, 37);
+    padding-bottom: 50px;
+    height: 2024px;
+}
+
+
+header{
+    padding: 20px 10px;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+
+
+}
+
+
+.form-add-track {
+    border: 1px solid #ddd;
+
+    background-color: #15366f;
+    height: auto;
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    margin: 10px auto;
+   
+
+    
+   
+    align-items: center;
+
+
+}
+
+#add-track-emblem {
+    font-size: 44px;
+    text-align: center;
+    color: #fff700;
+    margin-bottom: 50px;
+}
+
+.form-group {
+    margin-top: 30px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 800px;
+}
+
+
+.form-group label{
+    width: 200px;
+    font-size: 22px;
+    text-align: right;
+    color: #ffffff;
+
+}
+
+.form-group input{
+    margin: 0 30px;
+    width: 100%;
+    height: 30px;
+    border: 1px solid #ccc;
+    text-align: left;
+    color: #000000;
+    pointer-events: auto;
+    background-color: #ffffff;
+    font-size: 16px;
+}
+
+.add-track-button {
+    background-color: rgb(24, 8, 53);
+    color: #ffffff;
+    font-size: 22px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 5px;
+    height: 40px;
+}
+
+.add-track-button:hover{
+    background-color: rgb(251, 0, 0);
+}
+
+#exeption { 
+    font-size: 30px;
+    color: #ff0000;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#notification{
+    font-size: 30px;
+    color: #1eff00;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#emblem {
+    color: #ffffff;
+    font-size: 24px;
+    text-align: left;
+}
+
+nav a{
+    text-decoration: none;
+}
+
+nav ul{
+    margin: 0;
+    padding: 0;
+}
+
+nav li{
+    list-style-position: inside;
+    font: 14px 'Oswald', sans-serif;
+	padding: 10px;
+}
+
+.top-menu li {
+	display: inline-block;
+	padding: 10px 30px;
+	margin: 0;
+    background-color:  rgb(59, 53, 53);
+}
+
+.top-menu li:active{
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.top-menu a {
+	color: #b2b2b2;
+}
+
+/* Контейнер для всего контента поиска */
+.search-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Стили для формы поиска */
+.form-add-track {
+    background-color: #15366f;
+    width: 100%;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+}
+
+/* Стили для таблицы результатов */
+.search-results {
+    width: 100%;
+    background-color: #353030;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-results table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.search-results th, .search-results td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+    color: white;
+}
+
+.search-results th {
+    background-color: #2a2a2a;
+    font-size: 18px;
+}
+
+.search-results tr:hover {
+    background-color: #444;
+}
+
+/* Стили для кнопки добавления */
+.add-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-button:hover {
+    background-color: #45a049;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .form-group label {
+        text-align: left;
+        margin-bottom: 5px;
+    }
+    
+    .form-group input {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
