@@ -1,17 +1,18 @@
-package handlers
+package auth
 
 import (
-	db "LoveMusic/internal/database"
 	"context"
 	"errors"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var ErrAuth = errors.New("Unauthorized")
 
-func Authorise(w http.ResponseWriter, r *http.Request) (string, error) {
+func Authorise(w http.ResponseWriter, r *http.Request, redisClient *redis.Client) (string, error) {
 
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil || sessionToken.Value == "" {
@@ -20,7 +21,7 @@ func Authorise(w http.ResponseWriter, r *http.Request) (string, error) {
 
 	ctx := context.Background()
 
-	login, err := db.RedisDB.Get(ctx, "session:"+sessionToken.Value).Result()
+	login, err := redisClient.Get(ctx, "session:"+sessionToken.Value).Result()
 	if err != nil {
 		return "", ErrAuth
 	}
@@ -30,7 +31,7 @@ func Authorise(w http.ResponseWriter, r *http.Request) (string, error) {
 		return "", ErrAuth
 	}
 
-	storedLogin, err := db.RedisDB.Get(ctx, "csrf:"+csrfToken.Value).Result()
+	storedLogin, err := redisClient.Get(ctx, "csrf:"+csrfToken.Value).Result()
 	if err != nil || storedLogin != login {
 		return "", ErrAuth
 	}
@@ -55,11 +56,11 @@ func Authorise(w http.ResponseWriter, r *http.Request) (string, error) {
 		Path:     "/",
 	})
 
-	if err := db.RedisDB.Set(ctx, "session:"+sessionToken.Value, login, 30*time.Minute).Err(); err != nil {
+	if err := redisClient.Set(ctx, "session:"+sessionToken.Value, login, 30*time.Minute).Err(); err != nil {
 		log.Println("Не удалось продлить сессию:", err)
 	}
 
-	if err := db.RedisDB.Set(ctx, "csrf:"+csrfToken.Value, login, 30*time.Minute).Err(); err != nil {
+	if err := redisClient.Set(ctx, "csrf:"+csrfToken.Value, login, 30*time.Minute).Err(); err != nil {
 		log.Println("Не удалось продлить сессию:", err)
 	}
 

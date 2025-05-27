@@ -1,4 +1,4 @@
-package handlers
+package generatetoken
 
 import (
 	"crypto/rand"
@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func generateToken(lenght int) string {
+func GenerateToken(lenght int) string {
 
 	bytes := make([]byte, lenght)
 	if _, err := rand.Read(bytes); err != nil {

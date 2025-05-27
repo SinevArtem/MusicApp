@@ -25,8 +25,7 @@
             <div class="search-container">
                 <div class="form-add-track">
                     <div id="add-track-emblem">Найти трек</div>
-                    <div id="exeption">{{ .Exeption}}</div>
-                    <div id="notification">{{ .Notification}}</div>
+                  
                     
                     <form action="/search_track" method="post">
                         <div class="form-group">
@@ -56,13 +55,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{range .TopTracks}}
+                            {{range .Tracks}}
                             <tr>
                                 <td>{{.NameMusic}}</td>
                                 <td>{{.NameArtist}}</td>
                                 <td>
                                     <form action="/add_to_collection" method="post">
-                                        <input type="hidden" name="track_id" value="{{.ID}}">
+                                       
                                         <button type="submit" class="add-button">Добавить</button>
                                     </form>
                                 </td>
