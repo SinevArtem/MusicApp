@@ -62,9 +62,14 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	router.Get("/profile", page.New(log, homepageRepo, redisClient))
 	router.Post("/register", auth.RegisterHandler(log, authRepo))
+
+	router.Get("/login", auth.LoginPageHandler(log))
 	router.Post("/login", auth.LoginHandler(log, authRepo, redisClient))
+
 	router.Get("/logout", auth.LogoutHandler(log, redisClient))
 	router.Get("/collection", page.CollectionHandler(log, homepageRepo, redisClient))
 	router.Post("/search_track", tracks.SearchTrack(log, tracksRepo, redisClient))
