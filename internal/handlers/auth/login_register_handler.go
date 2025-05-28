@@ -80,20 +80,6 @@ func RegisterHandler(log *slog.Logger, logregSaver logregSaver) http.HandlerFunc
 
 }
 
-func LoginPageHandler(log *slog.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl, _ := template.ParseFiles("static/templates/login.html")
-
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, "Ошибка обработки формы", http.StatusBadRequest)
-			return
-		}
-
-		tmpl.Execute(w, nil)
-	}
-}
-
 func LoginHandler(log *slog.Logger, logregSaver logregSaver, redisClient *redis.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl, _ := template.ParseFiles("static/templates/login.html")

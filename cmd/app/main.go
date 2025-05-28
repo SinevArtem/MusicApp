@@ -10,10 +10,12 @@ import (
 	"LoveMusic/internal/handlers/auth"
 	"LoveMusic/internal/handlers/page"
 	"LoveMusic/internal/handlers/tracks"
-	"database/sql"
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,8 +27,6 @@ const (
 	envProd  = "prod"
 )
 
-var DB *sql.DB
-
 // go run cmd/app/main.go --config=./config/local.yaml
 func main() {
 
@@ -36,10 +36,9 @@ func main() {
 
 	storage, err := pg.New(cfg.StoragePath)
 	if err != nil {
-		log.Error("failed to init storage", err)
+		log.Error("failed to init storage", "error", err)
 		os.Exit(1)
 	}
-	defer storage.Close()
 
 	authRepo := pgAuth.NewAuthRepository(storage)
 	homepageRepo := pgHomepage.NewHomepageRepository(storage)
@@ -47,10 +46,9 @@ func main() {
 
 	redisClient, err := redis.New(&cfg.Redis)
 	if err != nil {
-		log.Error("failed to init redis", err)
+		log.Error("failed to init redis", "error", err)
 		os.Exit(1)
 	}
-	defer redisClient.Close()
 
 	fileserver := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileserver))
@@ -65,18 +63,21 @@ func main() {
 	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	router.Get("/profile", page.New(log, homepageRepo, redisClient))
+
 	router.Post("/register", auth.RegisterHandler(log, authRepo))
-
-	router.Get("/login", auth.LoginPageHandler(log))
+	router.Get("/register", auth.RegisterHandler(log, authRepo))
+	router.Get("/login", auth.LoginHandler(log, authRepo, redisClient))
 	router.Post("/login", auth.LoginHandler(log, authRepo, redisClient))
-
+	router.Get("/friends", page.UserFriends(log, homepageRepo, redisClient))
+	router.Post("/friends", page.UserFriends(log, homepageRepo, redisClient))
 	router.Get("/logout", auth.LogoutHandler(log, redisClient))
 	router.Get("/collection", page.CollectionHandler(log, homepageRepo, redisClient))
 	router.Post("/search_track", tracks.SearchTrack(log, tracksRepo, redisClient))
-	router.Post("/friends", page.UserFriends(log, homepageRepo, redisClient))
+	router.Get("/search_track", tracks.SearchTrack(log, tracksRepo, redisClient))
 	router.Post("/add_track", tracks.AddTrack(log, tracksRepo, redisClient))
+	router.Get("/add_track", tracks.AddTrack(log, tracksRepo, redisClient))
 
-	// http.HandleFunc("/user/", h.UserProfileHandler)
+	router.Get("/user/{id}", page.UserProfileHandler(log, homepageRepo, redisClient))
 
 	//http.HandleFunc("/profile", LoadProfile)
 
@@ -89,10 +90,33 @@ func main() {
 		WriteTimeout: cfg.HTTPServer.Timeout,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
+	// Graceful shutdown
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Error("failed to start server", "error", err)
+			done <- syscall.SIGTERM
+		}
+
+	}()
+	log.Info("started server", slog.String("address", cfg.HTTPServer.Address))
+
+	<-done
+	log.Info("server shutting down...")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Error("server shutdown error", "error", err)
 	}
-	log.Error("server stopped")
+
+	redisClient.Close()
+	storage.Close()
+
+	log.Info("server stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
