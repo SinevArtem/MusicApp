@@ -76,8 +76,9 @@ func main() {
 	router.Get("/search_track", tracks.SearchTrack(log, tracksRepo, redisClient))
 	router.Post("/add_track", tracks.AddTrack(log, tracksRepo, redisClient))
 	router.Get("/add_track", tracks.AddTrack(log, tracksRepo, redisClient))
-
 	router.Get("/user/{id}", page.UserProfileHandler(log, homepageRepo, redisClient))
+
+	router.Post("/add_to_collection", tracks.AddToCollection(log, tracksRepo, redisClient))
 
 	//http.HandleFunc("/profile", LoadProfile)
 
